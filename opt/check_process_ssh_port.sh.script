@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+# Uses SSH to connect to a remote host and checks for a process.
+# Assumes that the SSH keys have already been set up.
+
+PROGNAME=`basename $0`
+PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+REVISION=`echo '$Revision: 1.1 $' | sed -e 's/[^0-9.]//g'`
+
+# -_-
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+STATE_DEPENDENT=4
+
+if test -x /usr/bin/printf; then
+        ECHO=/usr/bin/printf
+else
+        ECHO=echo
+fi
+
+print_revision() {
+        echo "$1 v$2"
+}
+
+support() {
+        echo ""
+}
+
+
+print_usage() {
+  echo "Usage: $PROGNAME <HOST> <USERNAME> <WARNING LEVEL> <CRITICAL LEVEL> <PROCESS_STRING> <GT|LT> <PORT>"
+  echo "  Where: <WARNING LEVEL> is number of processes"
+  echo "         <CRITICAL LEVEL> is number of processes"
+  echo "         <PROCESS_STRING> process string to match on"
+  echo "         <GT> warning/critical if count is greater than parameters."
+  echo "         <LT> warning/critical if count is less than parameters."
+  echo "         <PORT> ssh port number (default:22)"
+}
+
+if [[ $# -lt 6 ]] ; then
+    print_usage
+    exit $STATE_UNKNOWN
+fi
+
+HOST=$1
+USERNAME=$2
+WARNLEVEL=$3
+CRITLEVEL=$4
+PROCESSSTRING=$5
+COMPARE=$6
+PORT=$7
+
+# Check that port number is supplied
+if [[ -z $PORT ]] ; then
+    PORT="22"
+fi
+
+
+# Check that warning level is above critical.
+if [[ $WARNLEVEL -gt $CRITLEVEL && $COMPARE == 'GT' ]] ; then
+    echo "Warning level ${WARNLEVEL} is > critical level ${CRITLEVEL}"
+    exit $STATE_UNKNOWN
+elif [[ $WARNLEVEL -lt $CRITLEVEL && $COMPARE == 'LT' ]] ; then 
+    echo "Warning level ${WARNLEVEL} is < critical level ${CRITLEVEL}"
+    exit $STATE_UNKNOWN
+fi
+
+# Connect via SSH and perform uptime.
+PROCESSCOUNT=`/usr/bin/ssh -q ${USERNAME}@${HOST} -p ${PORT} ps -fe | grep -v grep | grep -c $PROCESSSTRING`
+if [[ ${PROCESSCOUNT:-XXXX} = 'XXXX' ]] ; then
+    echo "No response from "${HOST}
+    exit $STATE_UNKNOWN
+fi
+
+COUNT="$PROCESSSTRING process count: $PROCESSCOUNT"
+#PERF="$PROCESSSTRING process Count=$PROCESSCOUNT"
+#MAXLVL=`prlimit -u|tail -1|awk '{print $7}'`
+PERF="$PROCESSSTRING=$PROCESSCOUNT;;;0;;"
+MSG="$COUNT | $PERF"
+
+# Check to see if at warning or critical level.
+if [[ $COMPARE == 'GT' ]] ; then
+    if [[ $PROCESSCOUNT -gt $WARNLEVEL && $PROCESSCOUNT -le $CRITLEVEL ]] ; then
+        echo "WARNING - $MSG"
+        exit $STATE_WARNING
+    elif [[ $PROCESSCOUNT -gt $CRITLEVEL ]] ; then
+        echo "CRITICAL - $MSG"
+        exit $STATE_CRITICAL
+    else
+        echo "OK - $MSG"
+        exit $STATE_OK
+    fi     
+else
+    if [[ $PROCESSCOUNT -lt $WARNLEVEL && $PROCESSCOUNT -ge $CRITLEVEL ]] ; then
+        echo "WARNING - $MSG"
+        exit $STATE_WARNING
+    elif [[ $PROCESSCOUNT -lt $CRITLEVEL ]] ; then
+        echo "CRITICAL - $MSG"
+        exit $STATE_CRITICAL
+    else
+        echo "OK - $MSG"
+        exit $STATE_OK
+    fi
+fi
+

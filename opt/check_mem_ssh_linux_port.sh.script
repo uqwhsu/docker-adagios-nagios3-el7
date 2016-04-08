@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# Uses SSH to connect to a remote host and checks available memory
+# and swap.
+# Assumes that the SSH keys have already been set up.
+# Modification of free swap test to alert on memory
+
+PROGNAME=`basename $0`
+PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+REVISION=`echo '$Revision: 1.1 $' | sed -e 's/[^0-9.]//g'`
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+STATE_DEPENDENT=4
+
+if test -x /usr/bin/printf; then
+        ECHO=/usr/bin/printf
+else
+        ECHO=echo
+fi
+
+print_revision() {
+        echo "$1 v$2"
+}
+
+support() {
+        echo ""
+}
+
+
+print_usage() {
+  echo "Usage: $PROGNAME <HOST> <USERNAME> <WARNING LEVEL> <CRITICAL LEVEL> <PORT>"
+  echo "  Where: <WARNING LEVEL> is free swap in MBytes"
+  echo "         <CRITICAL LEVEL> is free swap in MBytes"
+}
+
+if [[ $# -lt 4 ]] ; then
+    print_usage
+    exit $STATE_UNKNOWN
+fi
+
+HOST=$1
+USERNAME=$2
+WARNLEVEL=$3
+CRITLEVEL=$4
+PORT=$5
+
+# Check that port number is supplied
+if [[ -z $PORT ]] ; then
+    PORT="22"
+fi 
+
+
+# Check that warning level is above critical.
+if [[ $WARNLEVEL -le $CRITLEVEL ]] ; then
+    echo "Warning level ${WARNLEVEL}M is <= critical level ${CRITLEVEL}M"
+    exit $STATE_UNKNOWN
+fi
+
+# Connect via SSH and perform uptime.
+MEMOUT=`/usr/bin/ssh -q ${USERNAME}@${HOST} -p ${PORT} "free -m | grep -i "mem:"; true"`
+RESULT=$?
+
+# SSH failure
+if [ $RESULT -ne 0 ]; then
+   echo "SSH Failure to $HOST:$PORT"
+   exit $STATE_OK   # don't report SSH failures, enough other processes do
+fi
+
+FREEMEM=`echo $MEMOUT | awk '{print $4+$7}'`
+MSG="Free Mem: ${FREEMEM}M|Free=${FREEMEM}MB;;;0;;"
+
+# Check to see if the ammount of free memory is at warning or critical level.
+if [[ $FREEMEM -le $WARNLEVEL && $FREEMEM -gt $CRITLEVEL ]] ; then
+    echo "WARNING - "$MSG
+    exit $STATE_WARNING
+elif [[ $FREEMEM -le $CRITLEVEL ]] ; then
+    echo "CRITICAL - "$MSG
+    exit $STATE_CRITICAL
+else
+    echo "OK - "$MSG
+    exit $STATE_OK
+fi
+

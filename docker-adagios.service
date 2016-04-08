@@ -1,0 +1,28 @@
+[Unit]
+Description=Adagios/Nagios container
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill adagios
+ExecStartPre=-/usr/bin/docker rm adagios
+ExecStart=/usr/bin/docker run -h nagios --name nagios -p 80:80 -p 443:443 \
+  -e GIT_REPO=true \
+  -e ADAGIOS_USER=nagiosadmin \
+  -e ADAGIOS_PASS=nagiosP@ssw0rd \
+  -e GIT_REPO=true \
+  -e LOCALTIMEZONE=Australia/Brisbane
+  -v /mnt/adagios/data/adagios:/etc/adagios \
+  -v /mnt/adagios/data/nagios:/etc/nagios \
+  -v /mnt/adagios/data/pnp4nagios:/var/lib/pnp4nagios \
+  -v /mnt/adagios/data/log:/var/log/nagios \
+  -v /mnt/adagios/data/opt:/opt \
+  -v /mnt/adagios/data/.ssh:/var/spool/nagios/.ssh \
+  -v /mnt/adagios/data/main.cf:/etc/postfix/main.cf \
+  uqwhsu/adagios
+ExecStop=/usr/bin/docker stop adagios
+
+[Install]
+WantedBy=multi-user.target
+

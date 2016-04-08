@@ -1,0 +1,19 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<p>You are not logged in!</p>
+<script language="javascript">
+ if ((screen.width <= 800) || (navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.match(/iAndroid/i))) {
+  window.location = "/nagiosmobile";
+ } else {
+  window.location = "/adagios";
+ }
+</script>
+<br>
+ <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
+<p>If you are not redirected automatically, follow the <a href='/adagios'>link to Adagios</a></p>
+<p>If you are on mobile devices, follow the <a href='/nagiosmobile'>link to Nagios Mobile</a></p>
+</body>
+</html>

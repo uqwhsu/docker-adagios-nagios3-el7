@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+# Uses SSH to connect to a remote host and checks machine load
+# Assumes that the SSH keys have already been set up.
+
+PROGNAME=`basename $0`
+PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+REVISION=`echo '$Revision: 1.1 $' | sed -e 's/[^0-9.]//g'`
+
+STATE_OK=0
+STATE_WARNING=1
+STATE_CRITICAL=2
+STATE_UNKNOWN=3
+STATE_DEPENDENT=4
+
+if test -x /usr/bin/printf; then
+        ECHO=/usr/bin/printf
+else
+        ECHO=echo
+fi
+
+print_revision() {
+        echo "$1 v$2"
+}
+
+support() {
+        echo ""
+}
+
+
+print_usage() {
+  echo "Usage: $PROGNAME <HOST> <USERNAME> <WARNING LEVEL> <CRITICAL LEVEL> <PORT>"
+}
+
+if [[ $# -lt 4 ]] ; then
+    print_usage
+    exit $STATE_UNKNOWN
+fi
+
+HOST=$1
+USERNAME=$2
+WARNLEVEL=$3
+CRITLEVEL=$4
+PORT=$5
+
+# Check that port number is supplied
+if [[ -z $PORT ]] ; then
+    PORT="22"
+fi
+
+# Check that warning level is below critical.
+if [[ $WARNLEVEL -ge $CRITLEVEL ]] ; then
+    echo "Warning level $WARNLEVEL is >= critical level $CRITLEVEL"
+    exit $STATE_UNKNOWN
+fi
+
+# Connect via SSH and perform uptime.
+OUTPUT=`/usr/bin/ssh -q ${USERNAME}@${HOST} -p ${PORT} uptime`
+LOADSTR=`echo $OUTPUT | awk -F"load average: " '{print $2}'`
+if [[ ${LOADSTR:-XXXX} = 'XXXX' ]] ; then
+    echo "No response from $HOST"
+    exit $STATE_UNKNOWN
+fi
+LOAD=`echo $LOADSTR | awk -F. '{print $1}'`
+# perfdata format from check_load
+PERF5=`echo $LOADSTR|awk -F", " '/, /{printf "load1="$1}' && printf ";"$WARNLEVEL".00;"$CRITLEVEL".00;0; "`
+PERF10=`echo $LOADSTR|awk -F", " '/, /{printf "load5="$2}' && printf ";"$WARNLEVEL".00;"$CRITLEVEL".00;0; "`
+PERF15=`echo $LOADSTR|awk -F", " '/, /{printf "load15="$3}' && printf ";"$WARNLEVEL".00;"$CRITLEVEL".00;0; "`
+PERF=`echo -n $PERF5" "$PERF10" "$PERF15`
+
+MSG="Load average: $LOADSTR | $PERF"
+
+# Check to see if the ammount of free space is at warning or critical level.
+if [[ $LOAD -ge $WARNLEVEL && $LOAD -lt $CRITLEVEL ]] ; then
+    echo "WARNING - "$MSG
+    exit $STATE_WARNING
+elif [[ $LOAD -ge $CRITLEVEL ]] ; then
+    echo "CRITICAL - "$MSG
+    exit $STATE_CRITICAL
+else
+    echo "OK - "$MSG
+    exit $STATE_OK
+fi
+
