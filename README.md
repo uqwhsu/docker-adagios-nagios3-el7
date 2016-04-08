@@ -16,13 +16,13 @@ This is adapted from [pschmitt/adagios](https://github.com/pschmitt/docker-adagi
 
 ## Usage notes
 
-There are sample nagios plugins checks via ssh scripts located in **__opt/__** directory, as well as the shell script that install these plugins.  Copy them to **__/opt__** volume, then add the necessary commands/services for the plugins via Adagios interface.
+There are sample nagios plugins checks via ssh scripts located in **_opt/_** directory, as well as the shell script that install these plugins.  Copy them to **_/opt_** volume, then add the necessary commands/services for the plugins via Adagios interface.
 
 `custom-init-sample.sh` is kept as example alternative.
 
 It is strongly advisable to pre-generate passphraseless SSH public key to be stored in the nagios user home directory when using these nagios plugins.
 
-Make sure to customise **__/etc/postfix/main.cf__** to send out nagios alerts email.
+Make sure to customise **_/etc/postfix/main.cf_** to send out nagios alerts email.
 
 Please review and edit `docker-adagios.service` systemd service file before use.
 
@@ -69,6 +69,8 @@ After starting the container you can visit <http://localhost/> or <http://192.16
 
 use git revert or reset to roll back from failed nagios configuration.
 
+
+***
 
 # Original README.md from pschmitt/adagios
 
