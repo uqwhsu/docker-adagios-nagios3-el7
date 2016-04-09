@@ -53,6 +53,16 @@ then
     git init
     git add .
     git commit -m "Initial commit"
+    git config user.email "${ADAGIOS_USER}@${ADAGIOS_HOST}"
+    git config user.name "${ADAGIOS_USER}"
+    chown -R nagios /etc/nagios/.git
+fi
+# Set git user
+if [[ "$GIT_REPO" = "true" && -d /etc/nagios/.git ]]
+then
+    cd /etc/nagios
+    git config user.email "${ADAGIOS_USER}@${ADAGIOS_HOST}"
+    git config user.name "${ADAGIOS_USER}"
     chown -R nagios /etc/nagios/.git
 fi
 
@@ -77,7 +87,7 @@ then
 fi
 
 # Fix permissions
-chown -R nagios:nagios /etc/nagios /var/log/nagios /var/spool/nagios/.ssh /etc/adagios /var/lib/pnp4nagios /var/lib/adagios
+chown -R nagios:nagios /etc/nagios /var/log/nagios /var/spool/nagios /etc/adagios /var/lib/pnp4nagios /var/lib/adagios
 chmod 750 /etc/nagios /var/log/nagios
 chmod u+s /bin/ping
 

@@ -79,8 +79,7 @@ sed -i 's|OPTIONS=|OPTIONS=\nexport SYSTEMCTL_SKIP_REDIRECT=1|g' /usr/sbin/servi
 # Copy lighttpd and uwsgi enabled supervisor config over to the container
 COPY supervisord.conf /etc/supervisord.conf
 
-# Copy git, lighttpd, and uwsgi related files
-COPY nagioshome/.gitconfig /var/spool/nagios/.gitconfig
+# Copy lighttpd, and uwsgi related files
 COPY lighttpd/nagios.conf /etc/lighttpd/nagios.conf
 COPY lighttpd/ssl.conf /etc/lighttpd/ssl.conf
 COPY uwsgi/uwsgi.adagios.ini /etc/uwsgi.adagios.ini
