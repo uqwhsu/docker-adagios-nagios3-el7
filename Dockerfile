@@ -14,6 +14,7 @@ ENV LOCALTIMEZONE UTC
 ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 
 # Add repos, install packages, remove httpd
+# https://github.com/docker/hub-feedback/issues/461
 RUN yum -y update && \
 curl http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install --nogpgcheck libcap-dummy && \
