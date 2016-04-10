@@ -51,10 +51,10 @@ then
     cd /etc/nagios
     echo "passwd" > .gitignore
     git init
-    git add .
-    git commit -m "Initial commit"
     git config user.email "${ADAGIOS_USER}@${ADAGIOS_HOST}"
     git config user.name "${ADAGIOS_USER}"
+    git add .
+    git commit -m "Initial commit"
     chown -R nagios /etc/nagios/.git
 fi
 # Set git user
