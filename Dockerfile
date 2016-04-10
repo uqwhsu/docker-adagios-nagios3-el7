@@ -42,7 +42,8 @@ git clone https://github.com/opinkerfi/adagios.git && \
 cp -r /usr/local/adagios/adagios/etc/adagios /etc/ && \
 chown -R nagios:nagios /etc/adagios/ && \
 cd adagios && \
-python setup.py install 
+python setup.py install && \
+cd /usr/local && rm -rf adagios
 
 # Remove cache and default passwd file
 # Check all permissions
