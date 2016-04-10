@@ -16,6 +16,7 @@ ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 # Add repos, install packages, remove httpd
 RUN yum -y update && \
 yum -y install centos-release-openstack-liberty && \
+yum -y install --nogpgcheck httpd fping && \
 yum -y install nagios nagios-plugins-all && \
 yum -y install epel-release && \
 yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
