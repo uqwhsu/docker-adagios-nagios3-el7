@@ -97,6 +97,9 @@ COPY nagios.initd.autobackuprestore /etc/init.d/nagios
 # Copy custom supervisor init.d script (for nagios genpid)
 COPY nagios-supervisor-wrapper.sh /usr/bin/nagios-supervisor-wrapper.sh
 
+# Copy custom nagios checks plugins
+COPY opt/ /opt/
+
 # Create childlogdir
 # Make run.sh and supervisor wrapper script executable
 RUN sed -i 's|^\(nagios_init_script\)=\(.*\)$|\1="sudo /etc/init.d/nagios"|g' /etc/adagios/adagios.conf && \
@@ -105,7 +108,7 @@ echo "nagios ALL=NOPASSWD: /sbin/service nagios *" >> /etc/sudoers && \
 echo "nagios ALL=NOPASSWD: /usr/sbin/nagios -v *" >> /etc/sudoers && \
 sed -i 's|Defaults    requiretty|Defaults    !requiretty|g' /etc/sudoers && \
 mkdir /var/log/supervisor && \
-chmod 755 /usr/bin/run.sh /usr/bin/nagios-supervisor-wrapper.sh
+chmod 755 /usr/bin/run.sh /usr/bin/nagios-supervisor-wrapper.sh /opt/nagios-plugins-install.sh
 
 # Install nagios mobile
 # https://assets.nagios.com/downloads/exchange/nagiosmobile/Installing_Nagios_Mobile.pdf
