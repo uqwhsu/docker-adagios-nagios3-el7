@@ -15,7 +15,7 @@ ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 
 # Add repos, install packages, remove httpd
 RUN yum -y update && \
-wget -nv http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -O /etc/yum.repos.d/isvownClouddevel.repo && \
+curl http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install --nogpgcheck libcap-dummy && \
 yum -y install centos-release-openstack-liberty && \
 yum -y install nagios nagios-plugins-all && \
