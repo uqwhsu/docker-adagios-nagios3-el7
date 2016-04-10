@@ -32,9 +32,9 @@ yum --enablerepo=ok-testing clean all
 # Install supervisor and supervisor-quick. Service restarts are painfully slow
 # otherwise
 # https://github.com/Supervisor/meld3/issues/23
-RUN pip install setuptools --upgrade && \
-pip install supervisor && \
-pip install supervisor-quick
+RUN pip --no-cache-dir install setuptools --upgrade && \
+pip --no-cache-dir install supervisor && \
+pip --no-cache-dir install supervisor-quick
 
 # Install adagios from source
 RUN cd /usr/local && \
@@ -114,8 +114,7 @@ chmod 755 /usr/bin/run.sh /usr/bin/nagios-supervisor-wrapper.sh /opt/nagios-plug
 # Install nagios mobile
 # https://assets.nagios.com/downloads/exchange/nagiosmobile/Installing_Nagios_Mobile.pdf
 RUN cd /tmp && \
-curl -O https://assets.nagios.com/downloads/exchange/nagiosmobile/nagiosmobile.tar.gz && \
-tar xf nagiosmobile.tar.gz && \
+curl -s https://assets.nagios.com/downloads/exchange/nagiosmobile/nagiosmobile.tar.gz | tar xfz - && \
 cd nagiosmobile && \
 sed -i 's|AuthUserFile /usr/local/nagios/etc/htpasswd.users|AuthUserFile /etc/nagios/passwd|g' nagiosmobile_apache.conf && \
 sed -i 's|/usr/local/nagios/var/status.dat|/var/log/nagios/status.dat|g' include.inc.php && \
@@ -128,7 +127,7 @@ sed -i 's|/nagiosxi|/adagios|g' includes/main.inc.php && \
 sed -i 's|Nagios XI|Adagios|g' includes/main.inc.php && \
 ./INSTALL.php && \
 chmod 644 /etc/httpd/conf.d/nagiosmobile.conf && \
-cd /tmp && rm -rf nagiosmobile && rm nagiosmobile.tar.gz
+cd /tmp && rm -rf nagiosmobile
 
 WORKDIR /etc/nagios
 
