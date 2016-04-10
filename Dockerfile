@@ -54,8 +54,6 @@ python setup.py install
 # Patch service script to not redirect to systemd
 RUN rm -rf /var/cache/* /etc/nagios/passwd && \
 chown -R nagios /etc/nagios/* && \
-setfacl -R -m group:nagios:rwx /etc/nagios/ && \
-setfacl -R -m d:group:nagios:rwx /etc/nagios/ && \
 mkdir -p /etc/nagios/adagios && \
 pynag config --append cfg_dir=/etc/nagios/adagios && \
 pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg" && \
