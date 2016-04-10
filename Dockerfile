@@ -5,7 +5,7 @@
 
 FROM centos:7
 
-MAINTAINER Will Hsu <uqwhsu@users.noreply.github.com>
+MAINTAINER Will Hsu <uqwhsu@gmail.com>
 
 ENV ADAGIOS_HOST adagios.local
 ENV ADAGIOS_USER nagiosadmin
