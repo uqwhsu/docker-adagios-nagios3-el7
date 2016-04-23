@@ -28,7 +28,7 @@ gmp-devel pnp4nagios postfix python-pip python-django python-simplejson \
 python-paramiko python-devel openssl sudo && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
-rpm -ihv --nodeps http://download.fedoraproject.org/pub/epel/6/x86_64/`curl -sSL http://download.fedoraproject.org/pub/epel/6/x86_64/ |grep check-mk-livestatus|grep -o '<a href=".*">'| awk -F"\"" '{print $2}'` && \
+rpm -ihv --nodeps http://download.fedoraproject.org/pub/epel/6/x86_64/`curl -sSLk https://dl.fedoraproject.org/pub/epel/6/x86_64/repoview/check-mk-livestatus.html |grep "check-mk-livestatus-"|grep x86_64 |grep -o '<a href=".*">'| awk -F"\"" '{print $2}'|awk -F "/" '{print $2}'` && \
 rpm -e --nodeps httpd && \
 yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
 
