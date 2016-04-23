@@ -15,19 +15,22 @@ ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 
 # Add repos, install packages, remove httpd
 # https://github.com/docker/hub-feedback/issues/461
+# https://github.com/opinkerfi/adagios/issues/561
 RUN yum -y update && \
 curl http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install --nogpgcheck libcap-dummy && \
+sed -i 's|enabled=1|enabled=0|g' /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install centos-release-openstack-liberty && \
 yum -y install nagios nagios-plugins-all && \
 yum -y install epel-release && \
 yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
 gmp-devel pnp4nagios postfix python-pip python-django python-simplejson \
 python-paramiko python-devel openssl sudo && \
-rpm -ihv http://opensource.is/repo/ok-release.rpm && \
-yum --enablerepo=ok-testing -y install okconfig mk-livestatus pynag && \
+yum -y install http://opensource.is/repo/ok-release.rpm && \
+yum --enablerepo=ok-testing -y install okconfig pynag && \
+rpm -ihv --nodeps http://download.fedoraproject.org/pub/epel/6/x86_64/`curl -sSL http://download.fedoraproject.org/pub/epel/6/x86_64/ |grep check-mk-livestatus|grep -o '<a href=".*">'| awk -F"\"" '{print $2}'` && \
 rpm -e --nodeps httpd && \
-yum --enablerepo=ok-testing clean all
+yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
 
 # Install supervisor and supervisor-quick. Service restarts are painfully slow
 # otherwise
@@ -59,7 +62,7 @@ chown -R nagios /etc/nagios/* && \
 mkdir -p /etc/nagios/adagios && \
 pynag config --append cfg_dir=/etc/nagios/adagios && \
 pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg" && \
-pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus" && \
+pynag config --append "broker_module=/usr/lib64/check_mk/livestatus.o /var/spool/nagios/cmd/livestatus" && \
 pynag config --set "process_performance_data=1" && \
 usermod -G apache,lighttpd nagios && \
 usermod -G apache,nagios lighttpd && \
