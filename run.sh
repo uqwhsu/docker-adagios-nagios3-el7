@@ -76,6 +76,7 @@ do
     fi
 done
 
+# Create misc directories structure
 if [[ ! -d /var/spool/nagios/.ssh ]]
 then
     mkdir -p /var/spool/nagios/.ssh
