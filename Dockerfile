@@ -25,19 +25,16 @@ yum -y install nagios nagios-plugins-all && \
 yum -y install epel-release && \
 yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
 gmp-devel pnp4nagios postfix python-pip python-django python-simplejson \
-python-paramiko python-devel openssl sudo && \
+python-paramiko python-devel openssl sudo supervisor && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
-rpm -ihv --nodeps http://download.fedoraproject.org/pub/epel/6/x86_64/`curl -sSLk https://dl.fedoraproject.org/pub/epel/6/x86_64/repoview/check-mk-livestatus.html |grep "check-mk-livestatus-"|grep x86_64 |grep -o '<a href=".*">'| awk -F"\"" '{print $2}'|awk -F "/" '{print $2}'` && \
+sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
+cd /tmp && yumdownloader check-mk-livestatus && \
+rpm -ihv --nodeps `ls check-mk-livestatus*.rpm` && \
+rm check-mk-livestatus*.rpm && \
+sed -i 's|epel-6|epel-7|g' /etc/yum.repos.d/epel.repo && \
 rpm -e --nodeps httpd && \
 yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
-
-# Install supervisor and supervisor-quick. Service restarts are painfully slow
-# otherwise
-# https://github.com/Supervisor/meld3/issues/23
-RUN pip --no-cache-dir install setuptools --upgrade && \
-pip --no-cache-dir install supervisor && \
-pip --no-cache-dir install supervisor-quick
 
 # Install adagios from source
 RUN cd /usr/local && \
@@ -111,7 +108,6 @@ echo "nagios ALL=NOPASSWD: /etc/init.d/nagios *" >> /etc/sudoers && \
 echo "nagios ALL=NOPASSWD: /sbin/service nagios *" >> /etc/sudoers && \
 echo "nagios ALL=NOPASSWD: /usr/sbin/nagios -v *" >> /etc/sudoers && \
 sed -i 's|Defaults    requiretty|Defaults    !requiretty|g' /etc/sudoers && \
-mkdir /var/log/supervisor && \
 chmod 755 /usr/bin/run.sh /usr/bin/nagios-supervisor-wrapper.sh /opt/nagios-plugins-install.sh
 
 # Install nagios mobile
