@@ -29,6 +29,8 @@ python-paramiko python-devel openssl sudo supervisor && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
 sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
+curl https://getfedora.org/static/0608B895.txt -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
+rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
 cd /tmp && yumdownloader check-mk-livestatus && \
 rpm -ihv --nodeps `ls check-mk-livestatus*.rpm` && \
 rm check-mk-livestatus*.rpm && \
