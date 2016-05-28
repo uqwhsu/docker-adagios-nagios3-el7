@@ -158,7 +158,7 @@ case "$1" in
 				superpid=$(supervisorctl pid nagios)
 				echo $superpid > $NagiosRunFile
 			else 
-				superstatus1=$(supervisorctl start nagios)
+				superstatus1=$(supervisorctl quickstart nagios:nagios)
 				superpid=$(supervisorctl pid nagios)
 				echo $superpid > $NagiosRunFile
 			fi
@@ -177,7 +177,7 @@ case "$1" in
 
 		pid_nagios
 		
-		superstatus=$(supervisorctl stop nagios)
+		superstatus=$(supervisorctl quickstop nagios:nagios)
                 rm $NagiosRunFile
 
 		#killproc_nagios nagios

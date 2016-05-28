@@ -28,7 +28,7 @@ gmp-devel pnp4nagios postfix python-pip python-django python-simplejson \
 python-paramiko python-devel openssl sudo supervisor && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
-sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
+yum clean all && sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
 curl https://getfedora.org/static/0608B895.txt -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
 cd /tmp && yumdownloader check-mk-livestatus && \
@@ -37,6 +37,9 @@ rm check-mk-livestatus*.rpm && \
 sed -i 's|epel-6|epel-7|g' /etc/yum.repos.d/epel.repo && \
 rpm -e --nodeps httpd && \
 yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
+
+# Install supervisor-quick
+RUN pip --no-cache-dir install supervisor-quick
 
 # Install adagios from source
 RUN cd /usr/local && \
