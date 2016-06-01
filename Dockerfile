@@ -17,7 +17,7 @@ ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 # https://github.com/docker/hub-feedback/issues/461
 # https://github.com/opinkerfi/adagios/issues/561
 RUN yum -y update && \
-curl http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
+curl -s -S http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install --nogpgcheck libcap-dummy && \
 sed -i 's|enabled=1|enabled=0|g' /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install centos-release-openstack-liberty && \
@@ -29,7 +29,7 @@ python-paramiko openssl sudo supervisor sendxmpp && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
 yum clean all && sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
-curl https://getfedora.org/static/0608B895.txt -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
+curl -s -S https://getfedora.org/static/0608B895.txt -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
 rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
 cd /tmp && yumdownloader check-mk-livestatus && \
 rpm -ihv --nodeps `ls check-mk-livestatus*.rpm` && \
@@ -40,13 +40,13 @@ yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
 
 # Install supervisor-quick
 # Install adagios from source
-RUN pip --no-cache-dir install supervisor-quick && \
+RUN pip --disable-pip-version-check --no-cache-dir install supervisor-quick && \
 cd /usr/local && \
 git clone https://github.com/opinkerfi/adagios.git && \
 cp -r /usr/local/adagios/adagios/etc/adagios /etc/ && \
 chown -R nagios:nagios /etc/adagios/ && \
 cd adagios && \
-pip install --no-deps . && \
+pip --disable-pip-version-check --no-cache-dir install --no-deps . && \
 cd /usr/local && rm -rf adagios
 
 # Remove cache and default passwd file
@@ -117,7 +117,7 @@ chmod 755 /usr/bin/run.sh /usr/bin/nagios-supervisor-wrapper.sh /opt/nagios-plug
 # Install nagios mobile
 # https://assets.nagios.com/downloads/exchange/nagiosmobile/Installing_Nagios_Mobile.pdf
 RUN cd /tmp && \
-curl -s https://assets.nagios.com/downloads/exchange/nagiosmobile/nagiosmobile.tar.gz | tar xfz - && \
+curl -s -S https://assets.nagios.com/downloads/exchange/nagiosmobile/nagiosmobile.tar.gz | tar xfz - && \
 cd nagiosmobile && \
 sed -i 's|AuthUserFile /usr/local/nagios/etc/htpasswd.users|AuthUserFile /etc/nagios/passwd|g' nagiosmobile_apache.conf && \
 sed -i 's|/usr/local/nagios/var/status.dat|/var/log/nagios/status.dat|g' include.inc.php && \
