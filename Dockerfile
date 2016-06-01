@@ -39,10 +39,9 @@ rpm -e --nodeps httpd && \
 yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
 
 # Install supervisor-quick
-RUN pip --no-cache-dir install supervisor-quick
-
 # Install adagios from source
-RUN cd /usr/local && \
+RUN pip --no-cache-dir install supervisor-quick && \
+cd /usr/local && \
 git clone https://github.com/opinkerfi/adagios.git && \
 cp -r /usr/local/adagios/adagios/etc/adagios /etc/ && \
 chown -R nagios:nagios /etc/adagios/ && \
