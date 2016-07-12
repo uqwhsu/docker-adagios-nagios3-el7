@@ -24,8 +24,9 @@ yum -y install centos-release-openstack-liberty && \
 yum -y install nagios nagios-plugins-all postfix cyrus-sasl-plain mailx && \
 yum -y install epel-release && \
 yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
-gmp-devel pnp4nagios python-devel python-pip python-django python-simplejson \
-python-paramiko openssl sudo supervisor sendxmpp && \
+gmp-devel perl-libwww-perl perl-Crypt-SSLeay pnp4nagios python-devel \
+python-pip python-django python-simplejson python-paramiko openssl sudo \
+supervisor sendxmpp && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag && \
 yum clean all && sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
