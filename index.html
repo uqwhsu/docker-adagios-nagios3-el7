@@ -113,7 +113,7 @@ docker run -d -h nagios -p 80:80 -p 443:443 \
   -e ADAGIOS_USER=nagiosadmin \
   -e ADAGIOS_PASS=nagiosP@ssw0rd \
   -e GIT_REPO=<span class="pl-c1">true</span> \
-  -e LOCALTIMEZONE=Australia/Brisbane
+  -e LOCALTIMEZONE=Australia/Brisbane \
   -v <span class="pl-k">~</span>/dev/docker/adagios/data/adagios:/etc/adagios \
   -v <span class="pl-k">~</span>/dev/docker/adagios/data/nagios:/etc/nagios \
   -v <span class="pl-k">~</span>/dev/docker/adagios/data/pnp4nagios:/var/lib/pnp4nagios \
