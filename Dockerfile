@@ -20,24 +20,19 @@ RUN yum -y update && \
 curl -s -S http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
 yum -y install --nogpgcheck libcap-dummy && \
 sed -i 's|enabled=1|enabled=0|g' /etc/yum.repos.d/isvownClouddevel.repo && \
-yum -y install centos-release-openstack-liberty && \
+yum -y install centos-release-openstack-pike && \
 yum -y install nagios nagios-plugins-all postfix cyrus-sasl-plain mailx && \
+yum-config-manager --disable centos-openstack-pike && \
 yum -y install epel-release && \
 yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
 gmp-devel perl-libwww-perl perl-Crypt-SSLeay pnp4nagios python-devel \
 python-pip python-django python-simplejson python-paramiko openssl sudo \
 supervisor sendxmpp && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
-yum --enablerepo=ok-testing -y install okconfig pynag && \
-yum clean all && sed -i 's|epel-7|epel-6|g' /etc/yum.repos.d/epel.repo && \
-curl -s -S https://getfedora.org/static/0608B895.txt -o /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
-rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6 && \
-cd /tmp && yumdownloader check-mk-livestatus && \
-rpm -ihv --nodeps `ls check-mk-livestatus*.rpm` && \
-rm check-mk-livestatus*.rpm && \
-sed -i 's|epel-6|epel-7|g' /etc/yum.repos.d/epel.repo && \
+yum --enablerepo=ok-testing -y install okconfig pynag mk-livestatus && \
 rpm -e --nodeps httpd && \
-yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all
+yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all && \
+rm -rf /var/cache/yum
 
 # Install supervisor-quick
 # Install adagios from source
@@ -64,7 +59,7 @@ chown -R nagios /etc/nagios/* && \
 mkdir -p /etc/nagios/adagios && \
 pynag config --append cfg_dir=/etc/nagios/adagios && \
 pynag config --append "broker_module=/usr/lib64/nagios/brokers/npcdmod.o config_file=/etc/pnp4nagios/npcd.cfg" && \
-pynag config --append "broker_module=/usr/lib64/check_mk/livestatus.o /var/spool/nagios/cmd/livestatus" && \
+pynag config --append "broker_module=/usr/lib64/mk-livestatus/livestatus.o /var/spool/nagios/cmd/livestatus" && \
 pynag config --set "process_performance_data=1" && \
 usermod -G apache,lighttpd nagios && \
 usermod -G apache,nagios lighttpd && \
