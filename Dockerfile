@@ -16,22 +16,20 @@ ENV SSLCERT /etc/pki/tls/certs/localhost.pem
 # Add repos, install packages, remove httpd
 # https://github.com/docker/hub-feedback/issues/461
 # https://github.com/opinkerfi/adagios/issues/561
-RUN yum -y update && \
-curl -s -S http://download.opensuse.org/repositories/isv:/ownCloud:/devel/CentOS_7/isv:ownCloud:devel.repo -o /etc/yum.repos.d/isvownClouddevel.repo && \
-yum -y install --nogpgcheck libcap-dummy && \
-sed -i 's|enabled=1|enabled=0|g' /etc/yum.repos.d/isvownClouddevel.repo && \
+RUN yum -y --setopt=tsflags=nodocs update && \
 yum -y install centos-release-openstack-pike && \
-yum -y install nagios nagios-plugins-all postfix cyrus-sasl-plain mailx && \
+yum -y --setopt=tsflags=nodocs install nagios nagios-plugins-all postfix \
+cyrus-sasl-plain mailx && \
 yum-config-manager --disable centos-openstack-pike && \
 yum -y install epel-release && \
-yum -y install lighttpd lighttpd-fastcgi uwsgi uwsgi-plugin-python tar acl git \
-gmp-devel perl-libwww-perl perl-Crypt-SSLeay pnp4nagios python-devel \
-python-pip python-django python-simplejson python-paramiko openssl sudo \
-supervisor sendxmpp && \
+yum -y install --setopt=tsflags=nodocs lighttpd lighttpd-fastcgi uwsgi \
+uwsgi-plugin-python tar acl git gmp-devel perl-libwww-perl perl-Crypt-SSLeay \
+pnp4nagios python-devel python-pip python-django python-simplejson \
+python-paramiko openssl sudo supervisor sendxmpp && \
 yum -y install http://opensource.is/repo/ok-release.rpm && \
 yum --enablerepo=ok-testing -y install okconfig pynag mk-livestatus && \
 rpm -e --nodeps httpd && \
-yum --enablerepo=ok-testing --enablerepo=isv_ownCloud_devel clean all && \
+yum --enablerepo=ok-testing --enablerepo=centos-openstack-pike clean all && \
 rm -rf /var/cache/yum
 
 # Install supervisor-quick
